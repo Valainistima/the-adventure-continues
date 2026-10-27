@@ -739,7 +739,7 @@
       <button class="hotspot home-hotspot" id="homeButton" aria-label="Return to the home screen" title="Home"></button>
       <button class="hotspot controls-hotspot" data-modal="controlsModal" aria-label="Show game controls" title="Controls"></button>
       <button class="hotspot info-hotspot" data-modal="infoModal" aria-label="Project information" title="Info"></button>
-      <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="Download the authorized game file" title="Download the game (available after permission is confirmed)"></button>
+      <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="Download the authorized game file" title="Download the game"></button>
       <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>CLICK THE DRAGON TO DOWNLOAD THE ROM</span><span class="hint-arrow">↗</span></div>
       <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Wybierz plik gry." title="Start Game"></button>
       <button class="hotspot save-hotspot" data-modal="saveModal" aria-label="Informacje o zapisie gry" title="Save Game"></button>
@@ -1001,17 +1001,9 @@
 
       const ROM_DOWNLOAD_URL = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
 
-      dragonButton.addEventListener("click", () => {
-        if (!https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin || ROM_DOWNLOAD_URL.includes("example.com")) 
-          );
-          return;
-        }
-
-        // GitHub Release asset URLs usually trigger a download when opened directly.
-        // For cross-origin URLs, the browser may ignore the HTML download attribute,
-        // so we navigate to the direct asset URL instead.
-        window.location.href = ROM_DOWNLOAD_URL;
-      });
+dragonButton.addEventListener("click", () => {
+    window.location.href = https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
+});
 
       document.getElementById("pickRomButton").addEventListener("click", () => romInput.click());
       document.getElementById("pickBiosButton").addEventListener("click", () => biosInput.click());
