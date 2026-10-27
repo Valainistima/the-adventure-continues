@@ -739,8 +739,8 @@
       <button class="hotspot home-hotspot" id="homeButton" aria-label="Return to the home screen" title="Home"></button>
       <button class="hotspot controls-hotspot" data-modal="controlsModal" aria-label="Show game controls" title="Controls"></button>
       <button class="hotspot info-hotspot" data-modal="infoModal" aria-label="Project information" title="Info"></button>
-      <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="A little love for the golden dragon" title="Hover over me for a little magic"></button>
-      <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>CLICK THE DRAGON TO LOAD YOUR GAME</span><span class="hint-arrow">↗</span></div>
+      <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="Download the authorized game file" title="Download the game (available after permission is confirmed)"></button>
+      <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>CLICK THE DRAGON TO DOWNLOAD THE ROM</span><span class="hint-arrow">↗</span></div>
       <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Wybierz plik gry." title="Start Game"></button>
       <button class="hotspot save-hotspot" data-modal="saveModal" aria-label="Informacje o zapisie gry" title="Save Game"></button>
       <button class="hotspot fullscreen-hotspot" id="fullscreenButton" aria-label="Włącz lub wyłącz pełny ekran" title="Fullscreen"></button>
@@ -782,7 +782,7 @@
 
           <p class="local-privacy-note">Your selected ROM and BIOS are loaded in this browser. This page does not upload them to its website host. The emulator itself is downloaded from the EmulatorJS CDN, so an internet connection is required.</p>
           <p class="format-note">For easiest loading, use a single-file disc image such as CHD or PBP. A CUE image may depend on companion BIN track files.</p>
-          <p class="setup-status" id="setupStatus" role="status" aria-live="polite">Click the golden dragon or choose a game file to begin.</p>
+          <p class="setup-status" id="setupStatus" role="status" aria-live="polite">Choose your own game file to begin. The dragon download link is not configured yet.</p>
 
           <div class="setup-actions">
             <button class="modal-close setup-start" id="launchGameButton" type="button" disabled>START EMULATION</button>
@@ -837,7 +837,7 @@
       const romInput = document.getElementById("romFile");
       const biosInput = document.getElementById("biosFile");
       const startButton = document.getElementById("startButton");
-      const  = document.getElementById("dragonHeartButton");
+      const dragonButton = document.getElementById("dragonHeartButton");
       const gameAperture = document.getElementById("gameAperture");
       const gameElement = document.getElementById("game");
       const loadingOverlay = document.getElementById("loadingOverlay");
@@ -996,21 +996,22 @@
         const closeButton = setupModal.querySelector("[data-close-modal]");
         if (closeButton) closeButton.focus();
       }
-      // https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin
-const ROM_DOWNLOAD_URL =
-    "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
 
-dragonButton.addEventListener("click", () => {
-    if (!https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin ||
-        https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin.includes("example.com")) {
-        window.alert(
-            "The ROM download is not configured yet."
-        );
-        return;
-    }
+      startButton.addEventListener("click", openGameSetup);
 
-    window.location.href = https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin;
-});
+      const ROM_DOWNLOAD_URL = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
+
+      dragonButton.addEventListener("click", () => {
+        if (!https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin || ROM_DOWNLOAD_URL.includes("example.com")) 
+          );
+          return;
+        }
+
+        // GitHub Release asset URLs usually trigger a download when opened directly.
+        // For cross-origin URLs, the browser may ignore the HTML download attribute,
+        // so we navigate to the direct asset URL instead.
+        window.location.href = ROM_DOWNLOAD_URL;
+      });
 
       document.getElementById("pickRomButton").addEventListener("click", () => romInput.click());
       document.getElementById("pickBiosButton").addEventListener("click", () => biosInput.click());
@@ -1168,3 +1169,4 @@ dragonButton.addEventListener("click", () => {
   </script>
 </body>
 </html>
+
