@@ -1,22 +1,28 @@
-# Spyro Browser — Public Portal
+# Spyro Browser – Fan-Made Project
 
-A fan-made static web interface that loads EmulatorJS from its official CDN. The page includes a portal illustration, lightweight CSS effects, fullscreen emulator display, and a local ROM/optional BIOS selector opened by clicking the golden dragon (or the START GAME area).
+A fan-made project exploring the possibility of playing the classic *Spyro the Dragon* (1998) PlayStation game in a web browser using emulation technology.
 
-## Important
+## Disclaimer
 
-- This repository/package intentionally does **not** include a PlayStation ROM or BIOS.
-- Visitors select their own files in the browser. The page code does not upload those selected files to this website host.
-- If the visitor enables **Remember my files on this device**, files are stored in that browser's IndexedDB. Browser storage can be cleared or quota-limited.
-- EmulatorJS is loaded from `https://cdn.emulatorjs.org/stable/data/`, so an internet connection is needed to start the emulator.
-- This project is unofficial and is not affiliated with the rights holders of Spyro or PlayStation.
+This is an independent fan-made project. It is not affiliated with, endorsed by, or sponsored by Insomniac Games, Sony Interactive Entertainment, or any of their subsidiaries or affiliates.
 
-## Publish with GitHub Pages
+I do not claim ownership of *Spyro the Dragon*, its characters, artwork, trademarks, or the original PlayStation BIOS software. All related intellectual property belongs to its respective rights holders.
 
-1. Create a new public repository named `spyro-browser` (or another name you prefer).
-2. Upload `index.html`, `README.md`, `.nojekyll`, `.gitignore`, and the complete `assets` folder.
-3. In the repository, open **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select the `main` branch and `/(root)` folder, then save.
-6. Use the URL shown in **Settings → Pages** after the deployment finishes.
+This project does not include or intentionally distribute copyrighted game ROMs or PlayStation BIOS files. Users must provide their own game and BIOS files, where required, and are responsible for ensuring that their use of those files complies with applicable laws and licensing terms.
 
-Do not add ROM, BIOS, memory-card, or save-state files to a public repository unless you have permission to distribute them.
+The emulator and website code are separate from the original game files. References to *Spyro the Dragon* are made solely to identify the game this fan project is designed to support.
+
+## Important Notice
+
+This project is provided for educational and personal entertainment purposes. The disclaimer above does not grant permission to copy, distribute, or use copyrighted materials without authorization.
+
+If you are a rights holder and have concerns about this project, please contact the project maintainer.
+
+## Credits
+
+- Original game: *Spyro the Dragon* (1998)
+- Original game developer: Insomniac Games
+- Emulator technology: EmulatorJS
+- Website design and implementation: Independent fan project
+
+All trademarks and copyrights belong to their respective owners.
