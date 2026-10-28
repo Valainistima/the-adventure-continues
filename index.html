@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#16082e">
-  <title>Spyro Browser | Public Portal</title>
+  <title>Spyro Browser | Public Portal V15</title>
   <style>
     :root {
       --violet: #b56cff;
@@ -29,36 +29,41 @@
       font-family: Georgia, "Times New Roman", serif;
     }
 
-    /* Full-page scenic edge-fill. The sharp central art keeps its original 3:2 proportions. */
-    .ambient-backdrop {
-      position: fixed;
-      inset: -5%;
-      z-index: -2;
+    /* V15: keep the original artwork undistorted, and use a blurred copy behind it
+       to fill any side/top gaps caused by the browser viewport's aspect ratio. */
+    .ambient-backdrop,
+    .ambient-shade { display: none !important; }
+
+    .stage-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -28px;
+      z-index: 0;
       pointer-events: none;
-      background: url("assets/portal.webp") center / cover no-repeat;
-      /* A full-bleed, scenic fill replaces the dark empty side bars. */
-      filter: blur(12px) brightness(.58) saturate(1.22);
-      transform: scale(1.10);
+      background: url("assets/portal.webp?v=15") center center / cover no-repeat;
+      filter: blur(26px) brightness(.52) saturate(1.24);
+      transform: scale(1.04);
+      opacity: .96;
     }
 
-    .ambient-shade {
-      position: fixed;
+    .stage-wrap::after {
+      content: "";
+      position: absolute;
       inset: 0;
-      z-index: -1;
+      z-index: 0;
       pointer-events: none;
-      background: radial-gradient(
-        ellipse at center,
-        rgba(5, 1, 18, .02) 22%,
-        rgba(5, 1, 18, .10) 66%,
-        rgba(5, 1, 18, .30) 100%
-      );
+      background: linear-gradient(90deg,
+        rgba(9, 4, 20, .24) 0%,
+        rgba(9, 4, 20, .06) 22%,
+        rgba(9, 4, 20, .06) 78%,
+        rgba(9, 4, 20, .24) 100%);
     }
 
     .stage-wrap {
       position: fixed;
       z-index: 0;
       inset: 0;
-      width: 100%;
+      width: 100vw;
       height: 100vh;
       height: 100svh;
       min-height: 0;
@@ -66,17 +71,23 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      background: var(--night);
     }
 
-    /* The supplied artwork is 1536 x 1024 (3:2). It is never cropped. */
+    /* Fit the complete 1672:940 artwork inside the browser viewport. Never crop or stretch it. */
     .scene {
       position: relative;
+      z-index: 1;
       isolation: isolate;
-      width: min(100vw, 150vh);
-      aspect-ratio: 3 / 2;
+      width: min(100vw, 177.8724vh);
+      height: min(100vh, 56.2201vw);
+      width: min(100vw, 177.8724svh);
+      height: min(100svh, 56.2201vw);
+      aspect-ratio: 1672 / 940;
+      flex: 0 0 auto;
       overflow: hidden;
       background: var(--night);
-      box-shadow: 0 0 70px rgba(104, 44, 205, .28);
+      box-shadow: none;
     }
 
     .scene-art {
@@ -85,14 +96,16 @@
       width: 100%;
       height: 100%;
       display: block;
-      object-fit: fill;
+      /* The scene keeps the image's exact aspect ratio, so no part of the artwork is cropped. */
+      object-fit: contain;
+      object-position: center center;
       user-select: none;
       -webkit-user-drag: none;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Static portal aura: retain the glow without rotating rings or animated layers. */
+    /* A soft ambient wash stays behind the slow ring motion and crystal auras. */
     .portal-aura {
       position: absolute;
       left: 22.5%;
@@ -110,33 +123,119 @@
         transparent 69%
       );
       opacity: .66;
+      animation: portal-aura-breathe 8.8s ease-in-out infinite alternate;
     }
 
-    /* The crystals keep a single, gentle pulse. Only opacity changes; no animated shadows or scaling. */
+    @keyframes portal-aura-breathe {
+      from { opacity: .42; }
+      to { opacity: .78; }
+    }
+
+    /* V15: noticeable crystal auras. These are lightweight radial overlays; the art itself remains unchanged. */
     .crystal-glow {
       position: absolute;
       left: var(--x);
       top: var(--y);
       width: var(--w, 8%);
-      height: var(--h, 11%);
-      z-index: 1;
+      height: var(--h, 12%);
+      z-index: 2;
       pointer-events: none;
       border-radius: 50%;
-      background: radial-gradient(
-        ellipse at center,
-        rgba(255, 235, 253, .34) 0%,
-        rgba(255, 119, 221, .24) 28%,
-        rgba(220, 101, 255, .10) 53%,
-        transparent 73%
-      );
-      opacity: .28;
-      transform: translate(-50%, -50%);
-      animation: crystal-aura-pulse 6.2s ease-in-out var(--delay, 0s) infinite alternate;
+      background: radial-gradient(ellipse at center,
+        rgba(255, 250, 255, .68) 0%,
+        rgba(255, 160, 244, .56) 17%,
+        rgba(222, 104, 255, .42) 37%,
+        rgba(164, 77, 255, .23) 57%,
+        rgba(145, 74, 255, .08) 72%,
+        transparent 82%);
+      mix-blend-mode: screen;
+      filter: blur(5px);
+      opacity: .64;
+      transform: translate(-50%, -50%) scale(.82);
+      animation: crystal-aura-pulse var(--duration, 5.8s) ease-in-out var(--delay, 0s) infinite alternate;
+      will-change: opacity, transform;
     }
 
     @keyframes crystal-aura-pulse {
-      from { opacity: .18; }
-      to { opacity: .58; }
+      0%   { opacity: .44; transform: translate(-50%, -50%) scale(.78); }
+      55%  { opacity: .82; transform: translate(-50%, -50%) scale(1.02); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1.13); }
+    }
+
+    /* Slow partial ellipses ride around the portal's existing rim. */
+    .portal-ring-motion {
+      position: absolute;
+      left: 27.7%;
+      top: 23.4%;
+      width: 44.6%;
+      height: 56.4%;
+      z-index: 2;
+      border: 1px solid rgba(216, 167, 255, .12);
+      border-radius: 50% / 49%;
+      pointer-events: none;
+      opacity: .72;
+    }
+
+    .portal-ring-motion::before,
+    .portal-ring-motion::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 2px solid transparent;
+      border-radius: inherit;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .portal-ring-motion::before {
+      border-top-color: rgba(237, 178, 255, .40);
+      border-left-color: rgba(184, 128, 255, .24);
+      animation: portal-ring-turn 38s linear infinite;
+    }
+
+    .portal-ring-motion::after {
+      inset: 1.5% -1.1%;
+      border-width: 1px;
+      border-bottom-color: rgba(255, 160, 229, .34);
+      border-right-color: rgba(172, 142, 255, .24);
+      animation: portal-ring-turn-reverse 54s linear infinite;
+    }
+
+    @keyframes portal-ring-turn { to { transform: rotate(360deg); } }
+    @keyframes portal-ring-turn-reverse { to { transform: rotate(-360deg); } }
+
+    /* V15: floating bokeh orbs with clear movement, not just a stationary glow. */
+    .bokeh-glow {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: var(--size, 34px);
+      height: var(--size, 34px);
+      z-index: 4;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 244, 255, .96) 7%,
+        rgba(255, 175, 244, .88) 18%,
+        rgba(222, 135, 255, .62) 34%,
+        rgba(175, 100, 255, .28) 54%,
+        rgba(160, 92, 255, 0) 74%);
+      box-shadow: 0 0 11px rgba(255, 164, 247, .40), 0 0 24px rgba(179, 100, 255, .24);
+      mix-blend-mode: screen;
+      filter: blur(1.2px);
+      opacity: .62;
+      transform: translate(-50%, -50%);
+      translate: 0 0;
+      scale: .82;
+      animation: bokeh-drift var(--duration, 8s) ease-in-out var(--delay, 0s) infinite alternate;
+      will-change: opacity, translate, scale;
+    }
+
+    @keyframes bokeh-drift {
+      0%   { opacity: .32; translate: 0 9px; scale: .66; }
+      45%  { opacity: .96; translate: 13px -15px; scale: 1.10; }
+      100% { opacity: .50; translate: -11px -31px; scale: .82; }
     }
 
     /* Invisible, accessible hit areas sit directly over the labels/buttons in the illustration. */
@@ -162,10 +261,10 @@
     }
 
     .hotspot.start-hotspot {
-      left: 37.1%;
-      top: 60.1%;
-      width: 25.8%;
-      height: 9.2%;
+      left: 39.1%;
+      top: 61.5%;
+      width: 21.7%;
+      height: 9.7%;
       border-radius: 999px;
     }
 
@@ -173,16 +272,16 @@
       box-shadow: 0 0 24px 6px rgba(208, 148, 255, .18), inset 0 0 18px rgba(255, 220, 151, .12);
     }
 
-    .hotspot.home-hotspot { left: 5.3%; top: 1.8%; width: 7.2%; height: 5.1%; }
-    .hotspot.controls-hotspot { left: 15.2%; top: 1.8%; width: 8.7%; height: 5.1%; }
-    .hotspot.info-hotspot { left: 27.0%; top: 1.8%; width: 5.5%; height: 5.1%; }
+    .hotspot.home-hotspot { left: 9.4%; top: 1.4%; width: 7.3%; height: 5.6%; }
+    .hotspot.controls-hotspot { left: 19.2%; top: 1.4%; width: 9.4%; height: 5.6%; }
+    .hotspot.info-hotspot { left: 30.4%; top: 1.4%; width: 7.0%; height: 5.6%; }
 
     /* A tiny affectionate easter egg on the golden dragon in the top-right corner. */
     .hotspot.dragon-hotspot {
-      left: 89.2%;
-      top: 1.35%;
-      width: 6.2%;
-      height: 6.4%;
+      left: 82.8%;
+      top: 1.0%;
+      width: 6.5%;
+      height: 6.3%;
       z-index: 12;
       border-radius: 50%;
     }
@@ -237,19 +336,19 @@
       100% { opacity: 0; transform: translate(-50%, -18px) scale(.72) rotate(5deg); }
     }
 
-    .hotspot.save-hotspot { left: 54.8%; top: 91.4%; width: 11.8%; height: 6.0%; }
-    .hotspot.fullscreen-hotspot { left: 74.0%; top: 91.2%; width: 14.4%; height: 6.1%; }
+    .hotspot.save-hotspot { left: 53.7%; top: 91.0%; width: 12.0%; height: 6.6%; }
+    .hotspot.fullscreen-hotspot { left: 70.5%; top: 90.9%; width: 14.5%; height: 6.7%; }
 
     /* The live emulator occupies the inner opening; the illustration's stone frame stays visible. */
     .game-aperture {
       display: none;
       position: absolute;
       z-index: 5;
-      /* Enlarged opening: more room for the game while the stone portal stays visible. */
-      left: 28.5%;
-      top: 27%;
-      width: 43%;
-      height: 49%;
+      /* Fit the new portal's inner opening while keeping a near-4:3 game viewport. */
+      left: 30.8%;
+      top: 29.7%;
+      width: 38.4%;
+      height: 50.5%;
       overflow: hidden;
       isolation: isolate;
       border-radius: 44% 44% 15% 15% / 22% 22% 7% 7%;
@@ -308,9 +407,28 @@
     .game-aperture:-webkit-full-screen #game {
       position: absolute !important;
       inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      min-width: 100vw !important;
+      min-height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      aspect-ratio: auto !important;
       background: #000 !important;
+    }
+
+    /* EmulatorJS adds internal wrappers. Remove their usual aspect-ratio/max-width limits too. */
+    .game-aperture:fullscreen #game > div,
+    .game-aperture:-webkit-full-screen #game > div,
+    .game-aperture:fullscreen #game > div > div,
+    .game-aperture:-webkit-full-screen #game > div > div {
+      width: 100vw !important;
+      height: 100vh !important;
+      min-width: 100vw !important;
+      min-height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      aspect-ratio: auto !important;
     }
 
     .game-aperture:fullscreen #game canvas,
@@ -319,8 +437,17 @@
     .game-aperture:-webkit-full-screen #game canvas,
     .game-aperture:-webkit-full-screen #game iframe,
     .game-aperture:-webkit-full-screen #game video {
-      max-width: 100% !important;
-      max-height: 100% !important;
+      display: block !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      min-width: 100vw !important;
+      min-height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      aspect-ratio: auto !important;
+      object-fit: fill !important;
+      margin: 0 !important;
+      background: #000 !important;
     }
 
     .loading-overlay {
@@ -418,8 +545,9 @@
 
 
 
-    /* Persistent hint: the golden dragon is the game-file doorway. */
+    /* The V11 illustration already contains the prompt, so do not draw a duplicate HTML pill. */
     .dragon-hint {
+      display: none !important;
       position: absolute;
       z-index: 11;
       top: 8.1%;
@@ -589,6 +717,9 @@
     @media (prefers-reduced-motion: reduce) {
       .loading-orb,
       .crystal-glow,
+      .portal-aura,
+      .portal-ring-motion,
+      .bokeh-glow,
       .dragon-hotspot:hover::after {
         animation: none !important;
       }
@@ -600,11 +731,15 @@
     }
 
     /* Low-overhead mode turns on before the emulator starts. Keep the artwork,
-       but remove background blur, decorative layers, shadows and CSS animation. */
+       but remove decorative overlays, shadows and CSS animation. */
     body.game-performance-mode .ambient-backdrop,
     body.game-performance-mode .ambient-shade,
+    body.game-performance-mode .stage-wrap::before,
+    body.game-performance-mode .stage-wrap::after,
     body.game-performance-mode .portal-aura,
+    body.game-performance-mode .portal-ring-motion,
     body.game-performance-mode .crystal-glow,
+    body.game-performance-mode .bokeh-glow,
     body.game-performance-mode .particles,
     body.game-performance-mode .dragon-hint {
       display: none !important;
@@ -627,10 +762,11 @@
       box-shadow: none !important;
     }
 
-    /* Smaller screens use fewer crystal glow layers. */
+    /* Keep the ambient lights visible across viewports; slightly tone down rings on compact screens. */
     @media (max-width: 900px), (max-height: 560px) {
-      .crystal-glow:nth-of-type(n+4) { display: none; }
-      .ambient-backdrop { filter: blur(8px) brightness(.52) saturate(1.12); }
+      .portal-ring-motion { opacity: .48; }
+      .crystal-glow { filter: blur(3px); }
+      .bokeh-glow { filter: blur(.8px); }
     }
 
     @media (max-width: 700px) {
@@ -643,7 +779,7 @@
         overflow: hidden;
         align-items: flex-start;
       }
-      .scene { width: 100vw; flex: 0 0 auto; }
+      .scene { width: 100vw; height: auto; aspect-ratio: 1672 / 940; flex: 0 0 auto; }
       .modal-card p, .modal-card li { font-size: 12px; }
       .hotspot:focus-visible { outline-width: 1px; }
     }
@@ -651,7 +787,7 @@
 
     /* Visible, accessible music control. It stays above the portal artwork. */
     .music-control {
-      position: fixed;
+      position: absolute;
       right: max(18px, env(safe-area-inset-right));
       bottom: max(18px, env(safe-area-inset-bottom));
       z-index: 2147483000;
@@ -721,22 +857,37 @@
 
   <main class="stage-wrap">
     <section class="scene" id="scene" aria-label="Spyro Browser: Portal do Smoczych Krain">
-      <img class="scene-art" src="assets/portal.webp" alt="Magiczny portal w krainie smoków, kryształów i latających wysp" draggable="false">
+      <img class="scene-art" src="assets/portal.webp?v=15" alt="Panoramiczna kraina smoków z magicznym portalem i fioletowym smokiem na pierwszym planie po lewej" draggable="false">
 
       <div class="portal-aura" aria-hidden="true"></div>
-      <span class="crystal-glow" aria-hidden="true" style="--x:26%;--y:54%;--glow-color:#ff70d8;--w:9%;--h:12%;--duration:4.1s;--delay:.4s"></span>
-      <span class="crystal-glow" aria-hidden="true" style="--x:27%;--y:66%;--glow-color:#ff9be8;--w:8%;--h:10%;--duration:4.8s;--delay:1.5s"></span>
-      <span class="crystal-glow" aria-hidden="true" style="--x:73%;--y:54%;--glow-color:#ff64d3;--w:9%;--h:12%;--duration:3.8s;--delay:.8s"></span>
-      <span class="crystal-glow" aria-hidden="true" style="--x:87%;--y:68%;--glow-color:#ff9be8;--w:8%;--h:11%;--duration:4.9s;--delay:2.1s"></span>
-      <span class="crystal-glow" aria-hidden="true" style="--x:25%;--y:84%;--glow-color:#ff7cde;--w:10%;--h:13%;--duration:4.4s;--delay:1.1s"></span>
-      <span class="crystal-glow" aria-hidden="true" style="--x:77%;--y:82%;--glow-color:#ff70d8;--w:9%;--h:12%;--duration:5.1s;--delay:2.8s"></span>
+      <div class="portal-ring-motion" aria-hidden="true"></div>
+
+      <!-- Crystal auras: centered over the larger visible crystal groups in the artwork. -->
+      <span class="crystal-glow" aria-hidden="true" style="--x:4.5%;--y:55%;--w:8%;--h:15%;--duration:4.9s;--delay:.3s"></span>
+      <span class="crystal-glow" aria-hidden="true" style="--x:28.5%;--y:61%;--w:7.5%;--h:14%;--duration:5.7s;--delay:1.4s"></span>
+      <span class="crystal-glow" aria-hidden="true" style="--x:29.5%;--y:70%;--w:8.5%;--h:15%;--duration:4.5s;--delay:.9s"></span>
+      <span class="crystal-glow" aria-hidden="true" style="--x:77.5%;--y:68%;--w:8.5%;--h:15%;--duration:5.3s;--delay:1.9s"></span>
+      <span class="crystal-glow" aria-hidden="true" style="--x:93%;--y:74%;--w:8%;--h:15%;--duration:4.7s;--delay:.7s"></span>
+      <span class="crystal-glow" aria-hidden="true" style="--x:85%;--y:83%;--w:8%;--h:14%;--duration:5.9s;--delay:2.2s"></span>
+      <span class="crystal-glow" aria-hidden="true" style="--x:11%;--y:82%;--w:7%;--h:13%;--duration:5.1s;--delay:1.6s"></span>
+      <span class="crystal-glow" aria-hidden="true" style="--x:50%;--y:25%;--w:7%;--h:10%;--duration:4.3s;--delay:1.1s"></span>
+
+      <!-- Slow, floating bokeh lights spread across the landscape. -->
+      <span class="bokeh-glow" aria-hidden="true" style="--x:11%;--y:40%;--size:31px;--duration:8s;--delay:.2s"></span>
+      <span class="bokeh-glow" aria-hidden="true" style="--x:23%;--y:34%;--size:24px;--duration:9.1s;--delay:2.4s"></span>
+      <span class="bokeh-glow" aria-hidden="true" style="--x:38%;--y:70%;--size:27px;--duration:7.4s;--delay:1.3s"></span>
+      <span class="bokeh-glow" aria-hidden="true" style="--x:68%;--y:37%;--size:28px;--duration:9.6s;--delay:3.0s"></span>
+      <span class="bokeh-glow" aria-hidden="true" style="--x:86%;--y:45%;--size:34px;--duration:8.5s;--delay:1.7s"></span>
+      <span class="bokeh-glow bokeh-extra" aria-hidden="true" style="--x:96%;--y:62%;--size:29px;--duration:7.7s;--delay:3.4s"></span>
+      <span class="bokeh-glow bokeh-extra" aria-hidden="true" style="--x:57%;--y:82%;--size:26px;--duration:9.4s;--delay:2.8s"></span>
+      <span class="bokeh-glow bokeh-extra" aria-hidden="true" style="--x:8%;--y:75%;--size:25px;--duration:8.8s;--delay:4.1s"></span>
 
       <button class="hotspot home-hotspot" id="homeButton" aria-label="Return to the home screen" title="Home"></button>
       <button class="hotspot controls-hotspot" data-modal="controlsModal" aria-label="Show game controls" title="Controls"></button>
       <button class="hotspot info-hotspot" data-modal="infoModal" aria-label="Project information" title="Info"></button>
       <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="A little love for the golden dragon" title="Hover over me for a little magic"></button>
-      <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>click on dragon to download your game</span><span class="hint-arrow">↗</span></div>
-      <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Choose file" title="Start Game"></button>
+      <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>click to download your game</span><span class="hint-arrow">↗</span></div>
+      <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Wybierz plik gry." title="Start Game"></button>
       <button class="hotspot save-hotspot" data-modal="saveModal" aria-label="Informacje o zapisie gry" title="Save Game"></button>
       <button class="hotspot fullscreen-hotspot" id="fullscreenButton" aria-label="Włącz lub wyłącz pełny ekran" title="Fullscreen"></button>
 
@@ -744,8 +895,8 @@
         <div id="game"></div>
         <div class="loading-overlay" id="loadingOverlay">
           <div class="loading-orb" aria-hidden="true"></div>
-          <p id="loadingText">Opening portal...</p>
-          <small>The adventure continues</small>
+          <p id="loadingText">Otwieranie portalu...</p>
+          <small>Przygotowywanie krainy smoków</small>
         </div>
       </div>
 
@@ -817,11 +968,11 @@
           <button class="modal-close" data-close-modal>CLOSE</button>
         </div>
       </div>
+      <button class="music-control" id="musicButton" type="button" aria-pressed="false" aria-label="Play or pause background music" title="Starlit Dragon Vale · Eternal Drift V7. Click to play if your browser blocks autoplay.">♫ PLAY MUSIC</button>
     </section>
   </main>
 
-  <button class="music-control" id="musicButton" type="button" aria-pressed="false" aria-label="Play or pause background music" title="Starlit Dragon Vale · Eternal Drift V7. Click to play if your browser blocks autoplay.">♫ PLAY MUSIC</button>
-  <audio id="backgroundMusic" src="./assets/dragon-realms-ambience.mp3?v=9" preload="none" loop playsinline></audio>
+  <audio id="backgroundMusic" src="./assets/dragon-realms-ambience.mp3?v=15" preload="none" loop playsinline></audio>
 
   <input id="romFile" type="file" hidden accept=".chd,.cue,.bin,.iso,.img,.pbp,.mdf,.toc,.cbn,.m3u,.ccd,.zip,.7z">
   <input id="biosFile" type="file" hidden accept=".bin,.rom,.bios">
@@ -1132,6 +1283,7 @@ dragonButton.addEventListener("click", () => {
     }
 });
 
+
       document.getElementById("pickRomButton").addEventListener("click", () => romInput.click());
       document.getElementById("pickBiosButton").addEventListener("click", () => biosInput.click());
 
@@ -1246,8 +1398,13 @@ dragonButton.addEventListener("click", () => {
         const observer = new MutationObserver(() => {
           const display = gameElement.querySelector("canvas, iframe, video");
           if (display) {
+            fitEmulatorDisplayToViewport();
+            window.setTimeout(() => {
+              fitEmulatorDisplayToViewport();
+              loadingOverlay.classList.add("hidden");
+            }, 900);
+            window.setTimeout(fitEmulatorDisplayToViewport, 1800);
             observer.disconnect();
-            window.setTimeout(() => loadingOverlay.classList.add("hidden"), 900);
           }
         });
         observer.observe(gameElement, { childList: true, subtree: true });
@@ -1277,6 +1434,47 @@ dragonButton.addEventListener("click", () => {
         window.location.reload();
       });
 
+      function fitEmulatorDisplayToViewport() {
+        if (!gameElement) return;
+        const isGameFullscreen = (document.fullscreenElement || document.webkitFullscreenElement) === gameAperture;
+        const displays = gameElement.querySelectorAll("canvas, iframe, video");
+        displays.forEach(display => {
+          display.style.setProperty("max-width", isGameFullscreen ? "none" : "100%", "important");
+          display.style.setProperty("max-height", isGameFullscreen ? "none" : "100%", "important");
+          display.style.setProperty("width", isGameFullscreen ? "100vw" : "100%", "important");
+          display.style.setProperty("height", isGameFullscreen ? "100vh" : "100%", "important");
+          display.style.setProperty("aspect-ratio", "auto", "important");
+          if (display.tagName === "CANVAS" || display.tagName === "VIDEO") {
+            display.style.setProperty("object-fit", isGameFullscreen ? "fill" : "contain", "important");
+            display.style.setProperty("display", "block", "important");
+            display.style.setProperty("margin", isGameFullscreen ? "0" : "auto", "important");
+          }
+        });
+        if (isGameFullscreen) {
+          gameElement.style.setProperty("width", "100vw", "important");
+          gameElement.style.setProperty("height", "100vh", "important");
+          gameElement.style.setProperty("max-width", "none", "important");
+          gameElement.style.setProperty("max-height", "none", "important");
+        } else {
+          gameElement.style.removeProperty("max-width");
+          gameElement.style.removeProperty("max-height");
+        }
+      }
+
+      function refreshEmulatorViewport() {
+        fitEmulatorDisplayToViewport();
+        // EmulatorJS listens for window resize; trigger it after the browser enters/exits fullscreen.
+        window.requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
+        window.setTimeout(() => {
+          fitEmulatorDisplayToViewport();
+          window.dispatchEvent(new Event("resize"));
+        }, 180);
+      }
+
+      document.addEventListener("fullscreenchange", refreshEmulatorViewport);
+      document.addEventListener("webkitfullscreenchange", refreshEmulatorViewport);
+      window.addEventListener("resize", fitEmulatorDisplayToViewport, { passive: true });
+
       document.getElementById("fullscreenButton").addEventListener("click", async () => {
         if (!emulatorStarted) {
           window.alert("Choose the game first. Fullscreen includes only the emulator.");
@@ -1289,9 +1487,20 @@ dragonButton.addEventListener("click", () => {
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             return;
           }
-          if (gameAperture.requestFullscreen) await gameAperture.requestFullscreen({ navigationUI: "hide" });
-          else if (gameAperture.webkitRequestFullscreen) gameAperture.webkitRequestFullscreen();
-          else window.alert("This browser does not support fullscreen for the emulator.");
+          if (gameAperture.requestFullscreen) {
+            try {
+              await gameAperture.requestFullscreen({ navigationUI: "hide" });
+            } catch (optionsError) {
+              // Some browsers do not accept the navigationUI option.
+              await gameAperture.requestFullscreen();
+            }
+          } else if (gameAperture.webkitRequestFullscreen) {
+            gameAperture.webkitRequestFullscreen();
+          } else {
+            window.alert("This browser does not support fullscreen for the emulator.");
+            return;
+          }
+          refreshEmulatorViewport();
         } catch (error) {
           console.warn("Fullscreen is not available:", error);
           window.alert("Could not enable fullscreen. Try again after clicking inside the game.");
