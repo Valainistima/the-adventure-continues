@@ -649,52 +649,67 @@
     }
   
 
-    /* Floating music control. Browsers normally require a user gesture before sound can play. */
+    /* Visible, accessible music control. It stays above the portal artwork. */
     .music-control {
       position: fixed;
-      right: max(14px, env(safe-area-inset-right));
-      bottom: max(14px, env(safe-area-inset-bottom));
-      z-index: 50;
-      display: inline-flex;
+      right: max(18px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 2147483000;
+      display: inline-flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
       align-items: center;
       justify-content: center;
-      gap: 7px;
-      padding: 10px 14px;
-      border: 1px solid rgba(255, 217, 140, .7);
+      gap: 8px;
+      min-width: 150px;
+      min-height: 46px;
+      padding: 12px 16px;
+      border: 1px solid rgba(255, 217, 140, .9);
       border-radius: 999px;
-      color: #fff6ff;
-      background: rgba(26, 10, 52, .88);
-      box-shadow: 0 0 18px rgba(163, 92, 255, .35), inset 0 1px 0 rgba(255,255,255,.12);
-      font: 700 11px/1 Arial, sans-serif;
-      letter-spacing: 1.3px;
+      color: #fff8ff;
+      background: rgba(26, 10, 52, .96);
+      box-shadow: 0 0 18px rgba(163, 92, 255, .42), inset 0 1px 0 rgba(255,255,255,.14);
+      font: 700 11px/1.2 Arial, sans-serif;
+      letter-spacing: 1.1px;
       text-shadow: 0 0 8px rgba(201, 147, 255, .7);
       cursor: pointer;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
       transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
     }
 
     .music-control:hover {
       transform: translateY(-2px);
-      border-color: rgba(255, 150, 224, .95);
-      box-shadow: 0 0 24px rgba(255, 91, 213, .38), 0 0 10px rgba(163, 92, 255, .45);
+      border-color: rgba(255, 150, 224, .98);
+      box-shadow: 0 0 24px rgba(255, 91, 213, .4), 0 0 10px rgba(163, 92, 255, .5);
     }
 
     .music-control[aria-pressed="true"] {
-      border-color: rgba(255, 153, 226, .95);
-      box-shadow: 0 0 22px rgba(255, 91, 213, .3), inset 0 0 8px rgba(255, 153, 226, .12);
+      border-color: rgba(255, 153, 226, .98);
+      box-shadow: 0 0 22px rgba(255, 91, 213, .34), inset 0 0 8px rgba(255, 153, 226, .13);
     }
 
     .music-control:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-    .music-control:disabled { opacity: .65; cursor: default; transform: none; }
+    .music-control:disabled { opacity: .7 !important; cursor: default; transform: none; }
+
+    /* Do not hide the audio control when performance mode removes decorations. */
+    body.game-performance-mode .music-control {
+      display: inline-flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      box-shadow: none !important;
+    }
 
     @media (max-width: 700px) {
       .music-control {
-        right: max(8px, env(safe-area-inset-right));
-        bottom: max(8px, env(safe-area-inset-bottom));
-        padding: 9px 11px;
+        right: max(10px, env(safe-area-inset-right));
+        bottom: max(10px, env(safe-area-inset-bottom));
+        min-width: 132px;
+        min-height: 42px;
+        padding: 10px 12px;
         font-size: 10px;
-        letter-spacing: .8px;
+        letter-spacing: .7px;
       }
     }
 
@@ -805,8 +820,8 @@
     </section>
   </main>
 
-  <button class="music-control" id="musicButton" type="button" aria-pressed="false" aria-label="Toggle background music" title="Starlit Dragon Vale · Eternal Drift V7. Music fades out when emulation starts.">♫ MUSIC</button>
-  <audio id="backgroundMusic" src="assets/dragon-realms-ambience.mp3" preload="none" loop></audio>
+  <button class="music-control" id="musicButton" type="button" aria-pressed="false" aria-label="Play or pause background music" title="Starlit Dragon Vale · Eternal Drift V7. Click to play if your browser blocks autoplay.">♫ PLAY MUSIC</button>
+  <audio id="backgroundMusic" src="./assets/dragon-realms-ambience.mp3?v=9" preload="none" loop playsinline></audio>
 
   <input id="romFile" type="file" hidden accept=".chd,.cue,.bin,.iso,.img,.pbp,.mdf,.toc,.cbn,.m3u,.ccd,.zip,.7z">
   <input id="biosFile" type="file" hidden accept=".bin,.rom,.bios">
@@ -835,18 +850,28 @@
       const backgroundMusic = document.getElementById("backgroundMusic");
       const musicButton = document.getElementById("musicButton");
 
-      // Original fantasy ambience with a soft, wordless choir pad blended into flowing chords and gentle star-like motifs. Not a copy of any game soundtrack. Try autoplay on page load;
-      // if the browser blocks audio autoplay, start after the visitor's first gesture.
-      // The volume fades in slowly and fades out before the emulator starts.
-      const MUSIC_VOLUME = 0.15;
-      const MUSIC_FADE_IN_MS = 18000;
+      // Starlit Dragon Vale · Eternal Drift V7
+      // Autoplay is attempted once, but the visible button is always available as a manual fallback.
+      // The file stays unloaded until playback is requested to reduce initial work on modest PCs.
+      const MUSIC_VOLUME = 0.16;
+      const MUSIC_FADE_IN_MS = 2200;
       let musicMutedByUser = false;
       let musicFadeId = 0;
       let musicAnimationFrame = 0;
       let musicStartPromise = null;
       backgroundMusic.volume = 0;
+      backgroundMusic.preload = "none";
+      musicButton.disabled = false;
+      musicButton.textContent = "♫ PLAY MUSIC";
+      musicButton.setAttribute("aria-pressed", "false");
 
-      function fadeMusicTo(targetVolume, duration = 650) {
+      function setMusicButton(label, playing, title) {
+        musicButton.textContent = label;
+        musicButton.setAttribute("aria-pressed", playing ? "true" : "false");
+        musicButton.title = title || "Starlit Dragon Vale · Eternal Drift V7. Click to play or pause the portal music.";
+      }
+
+      function fadeMusicTo(targetVolume, duration = 500) {
         musicFadeId += 1;
         const currentFadeId = musicFadeId;
         if (musicAnimationFrame) cancelAnimationFrame(musicAnimationFrame);
@@ -856,7 +881,6 @@
           function step(now) {
             if (currentFadeId !== musicFadeId) { resolve(); return; }
             const progress = Math.min(1, (now - startTime) / duration);
-            // Smoothstep easing avoids a mechanical linear fade and feels more like a soft swell.
             const eased = progress * progress * (3 - 2 * progress);
             backgroundMusic.volume = startVolume + (targetVolume - startVolume) * eased;
             if (progress < 1) {
@@ -870,19 +894,36 @@
         });
       }
 
+      backgroundMusic.addEventListener("error", () => {
+        if (emulatorStarted || emulatorStarting) return;
+        musicButton.disabled = false;
+        setMusicButton(
+          "♫ AUDIO FILE ERROR",
+          false,
+          "The music file could not load. Check that assets/dragon-realms-ambience.mp3 exists in the published repository and exact letter casing matches."
+        );
+      });
+
       async function startBackgroundMusic() {
-        if (musicMutedByUser || emulatorStarted || emulatorStarting) return;
-        if (musicStartPromise) return musicStartPromise;
-        if (!backgroundMusic.paused && backgroundMusic.volume > 0) {
-          musicButton.textContent = "♫ MUSIC ON";
-          musicButton.setAttribute("aria-pressed", "true");
+        if (emulatorStarted || emulatorStarting) {
+          setMusicButton("♫ MUSIC PAUSED", false, "Portal music is paused while the emulator runs.");
           return;
         }
+        if (musicStartPromise) return musicStartPromise;
+        if (!backgroundMusic.paused && backgroundMusic.volume > 0.02) {
+          setMusicButton("♫ MUSIC ON · CLICK TO PAUSE", true);
+          return;
+        }
+
+        musicMutedByUser = false;
+        musicButton.disabled = false;
+        setMusicButton("♫ LOADING MUSIC…", false, "Loading Starlit Dragon Vale · Eternal Drift V7.");
 
         musicStartPromise = (async () => {
           try {
             if (backgroundMusic.paused) {
               backgroundMusic.volume = 0;
+              // Calling play() directly from the button's click path allows the browser's user-gesture policy.
               await backgroundMusic.play();
             }
             if (emulatorStarted || emulatorStarting || musicMutedByUser) {
@@ -892,13 +933,22 @@
             }
             await fadeMusicTo(MUSIC_VOLUME, MUSIC_FADE_IN_MS);
             if (!emulatorStarted && !emulatorStarting && !musicMutedByUser) {
-              musicButton.textContent = "♫ MUSIC ON";
-              musicButton.setAttribute("aria-pressed", "true");
+              setMusicButton("♫ MUSIC ON · CLICK TO PAUSE", true);
             }
           } catch (error) {
-            musicButton.textContent = "♫ TAP FOR MUSIC";
-            musicButton.setAttribute("aria-pressed", "false");
-            console.info("This browser blocked automatic audio. Music can start after a click.", error);
+            const sourceFailed = Boolean(backgroundMusic.error);
+            if (sourceFailed) {
+              setMusicButton(
+                "♫ AUDIO FILE ERROR",
+                false,
+                "Could not load the MP3. Confirm that assets/dragon-realms-ambience.mp3 is committed on the GitHub Pages branch."
+              );
+            } else if (error && error.name === "NotAllowedError") {
+              setMusicButton("♫ TAP TO PLAY", false, "Your browser blocked autoplay. Click here to start the music.");
+            } else {
+              setMusicButton("♫ RETRY MUSIC", false, "The music did not start. Click to try again. Check the MP3 file path if this repeats.");
+            }
+            console.info("Portal music could not start:", error);
           }
         })();
 
@@ -910,30 +960,28 @@
       }
 
       async function stopBackgroundMusic(forGame = false) {
-        // Cancel any fade-in before starting the fade-out.
         musicFadeId += 1;
         if (musicAnimationFrame) {
           cancelAnimationFrame(musicAnimationFrame);
           musicAnimationFrame = 0;
         }
         if (!backgroundMusic.paused && backgroundMusic.volume > 0) {
-          await fadeMusicTo(0, forGame ? 450 : 500);
+          await fadeMusicTo(0, forGame ? 300 : 250);
         }
         backgroundMusic.pause();
-        backgroundMusic.currentTime = 0;
+        try { backgroundMusic.currentTime = 0; } catch (_) {}
         if (forGame) {
           musicButton.disabled = true;
-          musicButton.textContent = "♫ MUSIC PAUSED";
-          musicButton.setAttribute("aria-pressed", "false");
+          setMusicButton("♫ MUSIC PAUSED", false, "Music is paused while the emulator runs. Return to the portal to enable it again.");
         } else {
-          musicButton.textContent = "♫ MUSIC OFF";
-          musicButton.setAttribute("aria-pressed", "false");
+          musicButton.disabled = false;
+          setMusicButton("♫ MUSIC OFF · CLICK TO PLAY", false);
         }
       }
 
       musicButton.addEventListener("click", async () => {
         if (emulatorStarted || emulatorStarting) return;
-        if (!backgroundMusic.paused) {
+        if (!backgroundMusic.paused && backgroundMusic.volume > 0.02) {
           musicMutedByUser = true;
           await stopBackgroundMusic(false);
         } else {
@@ -1083,7 +1131,6 @@ dragonButton.addEventListener("click", () => {
         openGameSetup();
     }
 });
-
 
       document.getElementById("pickRomButton").addEventListener("click", () => romInput.click());
       document.getElementById("pickBiosButton").addEventListener("click", () => biosInput.click());
@@ -1277,13 +1324,13 @@ dragonButton.addEventListener("click", () => {
         }
       });
 
-      // Autoplay is attempted on load. Some browsers block audible autoplay until
-      // a user gesture, so the first click anywhere else on the page is a fallback.
+      // Try autoplay gently. If rejected, the always-visible music button changes to TAP TO PLAY.
+      // The button remains the reliable fallback because its click is a real user gesture.
       window.setTimeout(() => {
         if (!emulatorStarted && !emulatorStarting && !musicMutedByUser) {
           startBackgroundMusic();
         }
-      }, 250);
+      }, 350);
 
       document.addEventListener("pointerdown", event => {
         if (event.target === musicButton || musicMutedByUser || emulatorStarted || emulatorStarting) return;
