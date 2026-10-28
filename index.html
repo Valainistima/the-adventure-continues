@@ -1199,13 +1199,11 @@
 
       startButton.addEventListener("click", openGameSetup);
 
-      const LEGAL_GAME_DOWNLOAD_URL = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
+      const ROM_DOWNLOAD_URL =
+    "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
 
       dragonButton.addEventListener("click", () => {
-        if (LEGAL_GAME_DOWNLOAD_URL.trim()) {
-          window.location.href = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
-        } else {
-          openGameSetup();
+    window.location.href = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
         }
       });
 
