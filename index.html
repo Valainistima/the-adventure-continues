@@ -142,7 +142,8 @@
       animation: portal-ring-spin 27s linear infinite reverse;
     }
 
-    /* Lightweight pink crystal aura: opacity-only pulse, no extra rings or animated shadows. */
+    /* Pink crystal aura: soft bloom plus a thin pulse ring. Both layers are
+       lightweight CSS effects and never intercept clicks. */
     .crystal-glow {
       position: absolute;
       left: var(--x);
@@ -154,19 +155,30 @@
       border-radius: 50%;
       background: radial-gradient(
         ellipse at center,
-        rgba(255, 223, 250, .30) 0%,
-        rgba(255, 119, 221, .23) 28%,
-        rgba(220, 101, 255, .10) 53%,
-        transparent 73%
+        rgba(255, 238, 255, .92) 0%,
+        rgba(255, 135, 225, .78) 14%,
+        rgba(255, 76, 207, .43) 34%,
+        rgba(211, 91, 255, .20) 53%,
+        rgba(255, 85, 214, .08) 65%,
+        transparent 74%
       );
-      opacity: .34;
-      transform: translate(-50%, -50%);
-      animation: crystal-aura-pulse 5.2s ease-in-out var(--delay, 0s) infinite alternate;
+      color: var(--glow-color, #ff82df);
+      opacity: .52;
+      mix-blend-mode: screen;
+      box-shadow: 0 0 18px 5px rgba(255, 92, 211, .18);
+      transform: translate(-50%, -50%) scale(.82);
+      animation: crystal-pulse var(--duration, 4.1s) ease-in-out var(--delay, 0s) infinite alternate;
     }
 
-    @keyframes crystal-aura-pulse {
-      from { opacity: .20; }
-      to { opacity: .66; }
+    .crystal-glow::after {
+      content: "";
+      position: absolute;
+      inset: 13% 9%;
+      border: 1px solid rgba(255, 173, 239, .72);
+      border-radius: 50%;
+      box-shadow: 0 0 9px rgba(255, 89, 215, .5), inset 0 0 8px rgba(255, 135, 230, .26);
+      opacity: .46;
+      animation: crystal-ripple var(--duration, 4.1s) ease-in-out var(--delay, 0s) infinite;
     }
 
     @keyframes portal-breathe {
@@ -645,23 +657,8 @@
       margin-top: 14px;
     }
 
-    .setup-actions > .modal-close {
-      margin-top: 0;
-      min-height: 42px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1.2;
-      vertical-align: middle;
-    }
-
     .setup-start { margin-top: 0; }
     .setup-start:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(.25); }
-
-    .setup-reset {
-      border-color: rgba(255, 183, 226, .78);
-      background: linear-gradient(135deg, #63366d, #3b2057);
-    }
 
     @media (max-width: 700px) {
       .dragon-hint {
@@ -673,8 +670,6 @@
       .setup-card { width: 94%; padding: 15px; }
       .file-pick-row { grid-template-columns: 1fr; gap: 8px; }
       .file-pick-button { justify-self: start; }
-      .setup-actions { gap: 8px; }
-      .setup-actions > .modal-close { min-height: 40px; padding: 10px 14px; }
     }
 
     .noscript-note {
@@ -688,49 +683,16 @@
       font: 12px Arial, sans-serif;
     }
 
-    /* Respect the OS reduce-motion preference and save resources. */
+    /* Keep the requested magic visible even when the OS prefers less motion,
+       but slow it down and soften it. The game itself is never animated by these effects. */
     @media (prefers-reduced-motion: reduce) {
-      .spark,
-      .loading-orb,
-      .portal-aura,
-      .portal-aura::before,
-      .portal-aura::after,
-      .crystal-glow,
-      .dragon-hint,
-      .dragon-hint .hint-arrow,
-      .dragon-hotspot:hover::after {
-        animation: none !important;
-      }
-      .music-control,
-      .file-pick-button,
-      .modal-close {
-        transition: none !important;
-      }
-    }
-
-    /* Automatically quiet the page's decorative effects while the emulator runs.
-       This avoids full-screen blur filters, particles and composited glow layers competing with emulation. */
-    body.game-performance-mode .ambient-backdrop {
-      filter: none;
-      transform: none;
-      opacity: .72;
-    }
-
-    body.game-performance-mode .portal-aura,
-    body.game-performance-mode .crystal-glow,
-    body.game-performance-mode .particles {
-      display: none !important;
-    }
-
-    body.game-performance-mode .loading-orb {
-      animation: none !important;
-      box-shadow: none;
-    }
-
-    body.game-performance-mode .music-control {
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      box-shadow: none;
+      .spark { animation-duration: 9s !important; }
+      .loading-orb { animation-duration: 3.2s !important; }
+      .portal-aura { animation-duration: 12s !important; }
+      .portal-aura::before { animation-duration: 32s !important; }
+      .portal-aura::after { animation-duration: 40s !important; }
+      .crystal-glow { animation-duration: 12s !important; }
+      .crystal-glow::after { animation-duration: 14s !important; }
     }
 
     /* On smaller screens, reduce the number of simultaneous effects. */
@@ -754,57 +716,6 @@
       .modal-card p, .modal-card li { font-size: 12px; }
       .hotspot:focus-visible { outline-width: 1px; }
     }
-  
-
-    /* Floating music control. Browsers normally require a user gesture before sound can play. */
-    .music-control {
-      position: fixed;
-      right: max(14px, env(safe-area-inset-right));
-      bottom: max(14px, env(safe-area-inset-bottom));
-      z-index: 50;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 10px 14px;
-      border: 1px solid rgba(255, 217, 140, .7);
-      border-radius: 999px;
-      color: #fff6ff;
-      background: rgba(26, 10, 52, .88);
-      box-shadow: 0 0 18px rgba(163, 92, 255, .35), inset 0 1px 0 rgba(255,255,255,.12);
-      font: 700 11px/1 Arial, sans-serif;
-      letter-spacing: 1.3px;
-      text-shadow: 0 0 8px rgba(201, 147, 255, .7);
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
-    }
-
-    .music-control:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255, 150, 224, .95);
-      box-shadow: 0 0 24px rgba(255, 91, 213, .38), 0 0 10px rgba(163, 92, 255, .45);
-    }
-
-    .music-control[aria-pressed="true"] {
-      border-color: rgba(255, 153, 226, .95);
-      box-shadow: 0 0 22px rgba(255, 91, 213, .3), inset 0 0 8px rgba(255, 153, 226, .12);
-    }
-
-    .music-control:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-    .music-control:disabled { opacity: .65; cursor: default; transform: none; }
-
-    @media (max-width: 700px) {
-      .music-control {
-        right: max(8px, env(safe-area-inset-right));
-        bottom: max(8px, env(safe-area-inset-bottom));
-        padding: 9px 11px;
-        font-size: 10px;
-        letter-spacing: .8px;
-      }
-    }
-
   </style>
 </head>
 <body>
@@ -828,8 +739,8 @@
       <button class="hotspot home-hotspot" id="homeButton" aria-label="Return to the home screen" title="Home"></button>
       <button class="hotspot controls-hotspot" data-modal="controlsModal" aria-label="Show game controls" title="Controls"></button>
       <button class="hotspot info-hotspot" data-modal="infoModal" aria-label="Project information" title="Info"></button>
-      <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="A little love for the golden dragon" title="Hover over me for a little magic"></button>
-      <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>click to download your game</span><span class="hint-arrow">↗</span></div>
+      <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="Download the authorized game file" title="Download the game (available after permission is confirmed)"></button>
+      <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>CLICK THE DRAGON TO DOWNLOAD THE ROM</span><span class="hint-arrow">↗</span></div>
       <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Wybierz plik gry." title="Start Game"></button>
       <button class="hotspot save-hotspot" data-modal="saveModal" aria-label="Informacje o zapisie gry" title="Save Game"></button>
       <button class="hotspot fullscreen-hotspot" id="fullscreenButton" aria-label="Włącz lub wyłącz pełny ekran" title="Fullscreen"></button>
@@ -871,11 +782,10 @@
 
           <p class="local-privacy-note">Your selected ROM and BIOS are loaded in this browser. This page does not upload them to its website host. The emulator itself is downloaded from the EmulatorJS CDN, so an internet connection is required.</p>
           <p class="format-note">For easiest loading, use a single-file disc image such as CHD or PBP. A CUE image may depend on companion BIN track files.</p>
-          <p class="setup-status" id="setupStatus" role="status" aria-live="polite">Click the golden dragon or choose a game file to begin.</p>
+          <p class="setup-status" id="setupStatus" role="status" aria-live="polite">Choose your own game file to begin. The dragon download link is not configured yet.</p>
 
           <div class="setup-actions">
             <button class="modal-close setup-start" id="launchGameButton" type="button" disabled>START EMULATION</button>
-            <button class="modal-close setup-reset" id="resetFilesButton" type="button">RESET FILES</button>
             <button class="modal-close" type="button" data-close-modal>CANCEL</button>
           </div>
         </div>
@@ -914,9 +824,6 @@
     </section>
   </main>
 
-  <button class="music-control" id="musicButton" type="button" aria-pressed="false" aria-label="Toggle background music" title="Original fantasy ambience. It fades out when the game starts.">♫ MUSIC</button>
-  <audio id="backgroundMusic" src="assets/dragon-realms-ambience.mp3" preload="auto" loop></audio>
-
   <input id="romFile" type="file" hidden accept=".chd,.cue,.bin,.iso,.img,.pbp,.mdf,.toc,.cbn,.m3u,.ccd,.zip,.7z">
   <input id="biosFile" type="file" hidden accept=".bin,.rom,.bios">
 
@@ -941,115 +848,6 @@
       const rememberFiles = document.getElementById("rememberFiles");
       const setupStatus = document.getElementById("setupStatus");
       const launchGameButton = document.getElementById("launchGameButton");
-      const backgroundMusic = document.getElementById("backgroundMusic");
-      const musicButton = document.getElementById("musicButton");
-
-      // Original fantasy ambience with a soft, wordless choir pad blended into flowing chords and gentle star-like motifs. Not a copy of any game soundtrack. Try autoplay on page load;
-      // if the browser blocks audio autoplay, start after the visitor's first gesture.
-      // The volume fades in slowly and fades out before the emulator starts.
-      const MUSIC_VOLUME = 0.15;
-      const MUSIC_FADE_IN_MS = 18000;
-      let musicMutedByUser = false;
-      let musicFadeId = 0;
-      let musicAnimationFrame = 0;
-      let musicStartPromise = null;
-      backgroundMusic.volume = 0;
-
-      function fadeMusicTo(targetVolume, duration = 650) {
-        musicFadeId += 1;
-        const currentFadeId = musicFadeId;
-        if (musicAnimationFrame) cancelAnimationFrame(musicAnimationFrame);
-        const startVolume = backgroundMusic.volume;
-        const startTime = performance.now();
-        return new Promise(resolve => {
-          function step(now) {
-            if (currentFadeId !== musicFadeId) { resolve(); return; }
-            const progress = Math.min(1, (now - startTime) / duration);
-            // Smoothstep easing avoids a mechanical linear fade and feels more like a soft swell.
-            const eased = progress * progress * (3 - 2 * progress);
-            backgroundMusic.volume = startVolume + (targetVolume - startVolume) * eased;
-            if (progress < 1) {
-              musicAnimationFrame = requestAnimationFrame(step);
-            } else {
-              musicAnimationFrame = 0;
-              resolve();
-            }
-          }
-          musicAnimationFrame = requestAnimationFrame(step);
-        });
-      }
-
-      async function startBackgroundMusic() {
-        if (musicMutedByUser || emulatorStarted || emulatorStarting) return;
-        if (musicStartPromise) return musicStartPromise;
-        if (!backgroundMusic.paused && backgroundMusic.volume > 0) {
-          musicButton.textContent = "♫ MUSIC ON";
-          musicButton.setAttribute("aria-pressed", "true");
-          return;
-        }
-
-        musicStartPromise = (async () => {
-          try {
-            if (backgroundMusic.paused) {
-              backgroundMusic.volume = 0;
-              await backgroundMusic.play();
-            }
-            if (emulatorStarted || emulatorStarting || musicMutedByUser) {
-              backgroundMusic.pause();
-              backgroundMusic.currentTime = 0;
-              return;
-            }
-            await fadeMusicTo(MUSIC_VOLUME, MUSIC_FADE_IN_MS);
-            if (!emulatorStarted && !emulatorStarting && !musicMutedByUser) {
-              musicButton.textContent = "♫ MUSIC ON";
-              musicButton.setAttribute("aria-pressed", "true");
-            }
-          } catch (error) {
-            musicButton.textContent = "♫ TAP FOR MUSIC";
-            musicButton.setAttribute("aria-pressed", "false");
-            console.info("This browser blocked automatic audio. Music can start after a click.", error);
-          }
-        })();
-
-        try {
-          await musicStartPromise;
-        } finally {
-          musicStartPromise = null;
-        }
-      }
-
-      async function stopBackgroundMusic(forGame = false) {
-        // Cancel any fade-in before starting the fade-out.
-        musicFadeId += 1;
-        if (musicAnimationFrame) {
-          cancelAnimationFrame(musicAnimationFrame);
-          musicAnimationFrame = 0;
-        }
-        if (!backgroundMusic.paused && backgroundMusic.volume > 0) {
-          await fadeMusicTo(0, forGame ? 1900 : 700);
-        }
-        backgroundMusic.pause();
-        backgroundMusic.currentTime = 0;
-        if (forGame) {
-          musicButton.disabled = true;
-          musicButton.textContent = "♫ MUSIC PAUSED";
-          musicButton.setAttribute("aria-pressed", "false");
-        } else {
-          musicButton.textContent = "♫ MUSIC OFF";
-          musicButton.setAttribute("aria-pressed", "false");
-        }
-      }
-
-      musicButton.addEventListener("click", async () => {
-        if (emulatorStarted || emulatorStarting) return;
-        if (!backgroundMusic.paused) {
-          musicMutedByUser = true;
-          await stopBackgroundMusic(false);
-        } else {
-          musicMutedByUser = false;
-          await startBackgroundMusic();
-        }
-      });
 
       const DB_NAME = "spyro-browser-local-files";
       const STORE_NAME = "game-files";
@@ -1058,18 +856,21 @@
       let selectedRomFile = null;
       let selectedBiosFile = null;
       let emulatorStarted = false;
-      let emulatorStarting = false;
       let lastFilesWereRestored = false;
       let gameObjectUrl = null;
       let biosObjectUrl = null;
 
       // Lightweight animated particles; no animation library or canvas is required.
       const particleSettings = [
-        [8, 43, 3, 6.0, 0.2, "#ffe39b"], [18, 72, 2, 7.1, 1.4, "#dcb1ff"],
-        [25, 38, 2, 6.4, 2.1, "#79efff"], [34, 79, 3, 7.4, 0.7, "#ffe39b"],
-        [65, 25, 2, 6.8, 0.9, "#ffe39b"], [73, 74, 3, 7.2, 2.4, "#c8a0ff"],
-        [84, 38, 2, 6.3, 1.3, "#7aeeff"], [91, 68, 3, 7.5, 0.4, "#ffe39b"],
-        [38, 31, 3, 6.9, 1.9, "#dcb1ff"], [68, 61, 2, 6.6, 2.6, "#77eeff"]
+        [7.5, 43, 3, 5.2, 0.2, "#ffe39b"], [12, 72, 2, 6.4, 1.4, "#dcb1ff"],
+        [18.5, 38, 2, 4.8, 2.1, "#79efff"], [23, 81, 3, 6.1, 0.7, "#ffe39b"],
+        [31, 28, 2, 5.5, 2.8, "#e7b0ff"], [36, 76, 2, 6.8, 1.7, "#77eeff"],
+        [65, 25, 2, 5.8, 0.9, "#ffe39b"], [71, 74, 3, 6.4, 2.4, "#c8a0ff"],
+        [78, 38, 2, 4.9, 1.3, "#7aeeff"], [85, 66, 3, 6.6, 0.4, "#ffe39b"],
+        [91, 37, 2, 5.7, 2.0, "#e3b2ff"], [94, 79, 2, 6.2, 1.0, "#77eeff"],
+        [33, 34, 4, 4.7, 0.6, "#ffe39b"], [35, 65, 3, 5.4, 1.9, "#dcb1ff"],
+        [39, 79, 3, 5.9, 0.8, "#79efff"], [66, 34, 4, 4.9, 2.2, "#ffe39b"],
+        [69, 62, 3, 5.2, 1.1, "#c8a0ff"], [64, 78, 3, 5.8, 2.6, "#77eeff"]
       ];
       const particles = document.getElementById("particles");
       particleSettings.forEach(([x, y, size, duration, delay, color]) => {
@@ -1165,11 +966,10 @@
       }
 
       async function openGameSetup() {
-        if (emulatorStarted || emulatorStarting) {
+        if (emulatorStarted) {
           window.alert("The game is already running. Use HOME to return to the portal before choosing another game.");
           return;
         }
-        if (!musicMutedByUser) startBackgroundMusic();
         setupModal.hidden = false;
         setupStatus.textContent = "Choose your own game file. BIOS is optional, but some setups need one.";
         updateFileLabels();
@@ -1198,43 +998,17 @@
       }
 
       startButton.addEventListener("click", openGameSetup);
-      
- // Direct download URL for https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin
-      const ROM_DOWNLOAD_URL =  "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
-      
-      dragonButton.addEventListener("click", () => {
-        window.location.href = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
-        }
-                                    
+
+// Direct download URL for https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin
+      const ROM_DOWNLOAD_URL = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
+
+dragonButton.addEventListener("click", () => {
+    window.location.href = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
+     }
       });
-    
 
       document.getElementById("pickRomButton").addEventListener("click", () => romInput.click());
       document.getElementById("pickBiosButton").addEventListener("click", () => biosInput.click());
-
-      document.getElementById("resetFilesButton").addEventListener("click", async () => {
-        // Reset only the pending selection. An already-running emulator is not modified.
-        if (emulatorStarted || emulatorStarting) {
-          setupStatus.textContent = "Return to the home screen before resetting files.";
-          return;
-        }
-
-        selectedRomFile = null;
-        selectedBiosFile = null;
-        lastFilesWereRestored = false;
-        romInput.value = "";
-        biosInput.value = "";
-        rememberFiles.checked = false;
-        updateFileLabels();
-
-        try {
-          await removeSavedFiles();
-          setupStatus.textContent = "ROM, BIOS and remembered files cleared. Choose new files to continue.";
-        } catch (error) {
-          console.info("No remembered files were available to clear:", error);
-          setupStatus.textContent = "Selected ROM and BIOS cleared. No saved browser copy was removed.";
-        }
-      });
 
       romInput.addEventListener("change", () => {
         const file = romInput.files && romInput.files[0];
@@ -1285,13 +1059,7 @@
         launchEmulator(romToLoad, biosToLoad);
       });
 
-      async function launchEmulator(gameFile, biosFile) {
-        emulatorStarting = true;
-        // Stop decorative animation and full-screen blur before the emulator starts.
-        // This leaves the static portal artwork but reduces competing browser/GPU work.
-        document.body.classList.add("game-performance-mode");
-        await stopBackgroundMusic(true);
-        emulatorStarting = false;
+      function launchEmulator(gameFile, biosFile) {
         emulatorStarted = true;
         scene.classList.add("is-playing");
         gameAperture.setAttribute("aria-hidden", "false");
@@ -1308,8 +1076,6 @@
         window.EJS_language = "en-US";
         window.EJS_disableAutoLang = true;
         window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
-        // Keep EmulatorJS defaults for core/threading: EJS_threads needs SharedArrayBuffer
-        // and COOP/COEP response headers, which a basic GitHub Pages setup does not configure.
         window.EJS_gameUrl = gameObjectUrl;
         window.EJS_biosUrl = biosObjectUrl || "";
         window.EJS_startOnLoaded = true;
@@ -1339,12 +1105,11 @@
         }, 25000);
       }
 
-      document.getElementById("homeButton").addEventListener("click", async () => {
+      document.getElementById("homeButton").addEventListener("click", () => {
         if (scene.classList.contains("is-playing")) {
           const leave = window.confirm("Return to the home screen? The emulator will be closed. Select START GAME to launch it again.");
           if (!leave) return;
         }
-        await stopBackgroundMusic(false);
         window.location.reload();
       });
 
@@ -1394,24 +1159,6 @@
           document.querySelectorAll(".modal-backdrop:not([hidden])").forEach(closeModal);
         }
       });
-
-      // Autoplay is attempted on load. Some browsers block audible autoplay until
-      // a user gesture, so the first click anywhere else on the page is a fallback.
-      window.setTimeout(() => {
-        if (!emulatorStarted && !emulatorStarting && !musicMutedByUser) {
-          startBackgroundMusic();
-        }
-      }, 250);
-
-      document.addEventListener("pointerdown", event => {
-        if (event.target === musicButton || musicMutedByUser || emulatorStarted || emulatorStarting) return;
-        startBackgroundMusic();
-      }, { once: true, capture: true });
-
-      document.addEventListener("keydown", event => {
-        if (event.target === musicButton || musicMutedByUser || emulatorStarted || emulatorStarting) return;
-        startBackgroundMusic();
-      }, { once: true, capture: true });
     })();
   </script>
 </body>
