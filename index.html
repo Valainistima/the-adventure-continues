@@ -1199,14 +1199,11 @@
 
       startButton.addEventListener("click", openGameSetup);
 
-      // FUTURE SETUP:
-      // Paste a direct URL here only for a game file you have the legal right to distribute.
-      // Leave it empty for now: clicking the golden dragon will open the local-file chooser.
-      const LEGAL_GAME_DOWNLOAD_URL = "";
+      const LEGAL_GAME_DOWNLOAD_URL = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
 
       dragonButton.addEventListener("click", () => {
         if (LEGAL_GAME_DOWNLOAD_URL.trim()) {
-          window.location.href = LEGAL_GAME_DOWNLOAD_URL;
+          window.location.href = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
         } else {
           openGameSetup();
         }
