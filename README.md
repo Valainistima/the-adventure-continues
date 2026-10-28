@@ -1,28 +1,20 @@
-# Spyro Browser – Fan-Made Project
+# Spyro Browser – Performance & Music Update V7
 
-A fan-made project exploring the possibility of playing the classic *Spyro the Dragon* (1998) PlayStation game in a web browser using emulation technology.
+A fan-made browser portal concept for playing a user-provided PlayStation game file with browser emulation. Not affiliated with or endorsed by the rights holders of Spyro.
 
-## Disclaimer
+## V7 music update
+- Keeps the flowing ambient bed and gentle star-like accents from the previous version.
+- Adds a quiet, original synthetic wordless choir layer built from soft vowel-like tones (no words or copied melody).
+- Choir voices swell slowly and sustain with a long, gentle release to add depth without taking over the mix.
+- The page retains gradual music fade-in and fades the music out before launching the emulator.
+- The original game ROM and PlayStation BIOS are not included. Users must provide their own files and ensure their use complies with applicable permissions and law.
 
-This is an independent fan-made project. It is not affiliated with, endorsed by, or sponsored by Insomniac Games, Sony Interactive Entertainment, or any of their subsidiaries or affiliates.
+## Local test
+1. Unzip the project.
+2. Open the folder in Visual Studio Code.
+3. Run `index.html` using Live Server.
+4. Some browsers block audible autoplay until the first interaction; click the dragon or MUSIC button if necessary.
+5. Listen to the new choir layer, then test that the ambience fades out before emulation starts.
 
-I do not claim ownership of *Spyro the Dragon*, its characters, artwork, trademarks, or the original PlayStation BIOS software. All related intellectual property belongs to its respective rights holders.
-
-This project does not include or intentionally distribute copyrighted game ROMs or PlayStation BIOS files. Users must provide their own game and BIOS files, where required, and are responsible for ensuring that their use of those files complies with applicable laws and licensing terms.
-
-The emulator and website code are separate from the original game files. References to *Spyro the Dragon* are made solely to identify the game this fan project is designed to support.
-
-## Important Notice
-
-This project is provided for educational and personal entertainment purposes. The disclaimer above does not grant permission to copy, distribute, or use copyrighted materials without authorization.
-
-If you are a rights holder and have concerns about this project, please contact the project maintainer.
-
-## Credits
-
-- Original game: *Spyro the Dragon* (1998)
-- Original game developer: Insomniac Games
-- Emulator technology: EmulatorJS
-- Website design and implementation: Independent fan project
-
-All trademarks and copyrights belong to their respective owners.
+## GitHub Pages update
+Commit the updated `index.html` and `assets/dragon-realms-ambience.mp3`. Keep `assets/portal.webp` and the existing folder structure. Do not put game ROMs or BIOS files in the public repository without appropriate distribution rights.
