@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#16082e">
-  <title>Spyro Browser | Public Portal V17</title>
+  <title>Spyro Browser | Public Portal V18</title>
   <style>
     :root {
       --violet: #b56cff;
@@ -40,7 +40,7 @@
       inset: -28px;
       z-index: 0;
       pointer-events: none;
-      background: url("assets/portal.webp?v=17") center center / cover no-repeat;
+      background: url("assets/portal.webp?v=18") center center / cover no-repeat;
       filter: blur(26px) brightness(.52) saturate(1.24);
       transform: scale(1.04);
       opacity: .96;
@@ -570,10 +570,10 @@
     .dragon-hint {
       position: absolute;
       z-index: 11;
-      left: 71.05%;
-      top: 8.95%;
-      width: 19.8%;
-      height: 5.8%;
+      left: 70.9%;
+      top: 8.65%;
+      width: 20.25%;
+      height: 6.15%;
       min-height: 24px;
       padding: 0 clamp(6px, .72vw, 12px);
       display: flex;
@@ -608,7 +608,7 @@
       flex: 0 0 auto;
     }
 
-    .scene.is-playing .dragon-hint { display: none; }
+    .scene.is-playing .dragon-hint { display: flex; }
 
     .setup-card {
       width: min(520px, 92%);
@@ -773,9 +773,16 @@
     body.game-performance-mode .portal-ring-motion,
     body.game-performance-mode .crystal-glow,
     body.game-performance-mode .bokeh-glow,
-    body.game-performance-mode .particles,
-    body.game-performance-mode .dragon-hint {
+    body.game-performance-mode .particles {
       display: none !important;
+    }
+
+    /* V18 fix: keep the editable HTML label visible because it masks text baked into portal.webp.
+       Do not hide this element when the emulator enters performance mode or starts playing. */
+    body.game-performance-mode .dragon-hint {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     body.game-performance-mode,
@@ -890,7 +897,7 @@
 
   <main class="stage-wrap">
     <section class="scene" id="scene" aria-label="Spyro Browser: Portal do Smoczych Krain">
-      <img class="scene-art" src="assets/portal.webp?v=17" alt="Panoramiczna kraina smoków z magicznym portalem i fioletowym smokiem na pierwszym planie po lewej" draggable="false">
+      <img class="scene-art" src="assets/portal.webp?v=18" alt="Panoramiczna kraina smoków z magicznym portalem i fioletowym smokiem na pierwszym planie po lewej" draggable="false">
 
       <div class="portal-aura" aria-hidden="true"></div>
       <div class="portal-ring-motion" aria-hidden="true"></div>
@@ -919,8 +926,9 @@
       <button class="hotspot controls-hotspot" data-modal="controlsModal" aria-label="Show game controls" title="Controls"></button>
       <button class="hotspot info-hotspot" data-modal="infoModal" aria-label="Project information" title="Info"></button>
       <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="A little love for the golden dragon" title="Hover over me for a little magic"></button>
+      <!-- EDIT THE TEXT BELOW whenever you want to change the prompt on the artwork. -->
       <div class="dragon-hint" id="dragonHint"><span class="hint-label">Click on dragon. Choose your adventure.</span><span class="hint-arrow" aria-hidden="true">↗</span></div>
-      <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Choose file." title="Start Game"></button>
+      <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Wybierz plik gry." title="Start Game"></button>
       <button class="hotspot save-hotspot" data-modal="saveModal" aria-label="Informacje o zapisie gry" title="Save Game"></button>
       <button class="hotspot fullscreen-hotspot" id="fullscreenButton" aria-label="Włącz lub wyłącz pełny ekran" title="Fullscreen"></button>
 
@@ -1315,6 +1323,7 @@ dragonButton.addEventListener("click", () => {
         openGameSetup();
     }
 });
+
 
 
       document.getElementById("pickRomButton").addEventListener("click", () => romInput.click());
