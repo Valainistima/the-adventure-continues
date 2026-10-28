@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#16082e">
-  <title>Spyro Browser | Public Portal V15</title>
+  <title>Spyro Browser | Public Portal V17</title>
   <style>
     :root {
       --violet: #b56cff;
@@ -40,7 +40,7 @@
       inset: -28px;
       z-index: 0;
       pointer-events: none;
-      background: url("assets/portal.webp?v=15") center center / cover no-repeat;
+      background: url("assets/portal.webp?v=17") center center / cover no-repeat;
       filter: blur(26px) brightness(.52) saturate(1.24);
       transform: scale(1.04);
       opacity: .96;
@@ -339,24 +339,38 @@
     .hotspot.save-hotspot { left: 53.7%; top: 91.0%; width: 12.0%; height: 6.6%; }
     .hotspot.fullscreen-hotspot { left: 70.5%; top: 90.9%; width: 14.5%; height: 6.7%; }
 
-    /* The live emulator occupies the inner opening; the illustration's stone frame stays visible. */
+    /* V16: inset the gameplay slightly into the portal's inner glow so it reads as
+       part of the portal, not a separate card sitting on top of the illustration. */
     .game-aperture {
       display: none;
       position: absolute;
       z-index: 5;
-      /* Fit the new portal's inner opening while keeping a near-4:3 game viewport. */
-      left: 30.8%;
-      top: 29.7%;
-      width: 38.4%;
-      height: 50.5%;
+      left: 31.3%;
+      top: 30.7%;
+      width: 37.4%;
+      height: 49%;
       overflow: hidden;
       isolation: isolate;
-      border-radius: 44% 44% 15% 15% / 22% 22% 7% 7%;
+      border-radius: 45% 45% 13% 13% / 23% 23% 6% 6%;
+      clip-path: inset(0 round 45% 45% 13% 13% / 23% 23% 6% 6%);
       background: #03020a;
       box-shadow:
-        0 0 8px 3px rgba(128, 81, 255, .92),
-        0 0 22px 8px rgba(111, 69, 255, .52),
-        inset 0 0 14px rgba(116, 74, 255, .3);
+        0 0 5px 2px rgba(145, 78, 255, .48),
+        0 0 16px 5px rgba(111, 69, 255, .25),
+        inset 0 0 20px rgba(148, 77, 255, .23);
+    }
+
+    /* A quiet purple lip softly blends the edge of the game image into the portal. */
+    .game-aperture::after {
+      content: "";
+      position: absolute;
+      z-index: 20;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow:
+        inset 0 0 9px 2px rgba(224, 164, 255, .16),
+        inset 0 0 24px 6px rgba(112, 50, 231, .18);
     }
 
     .scene.is-playing .game-aperture { display: block; }
@@ -398,9 +412,15 @@
       overflow: hidden !important;
       border: 0 !important;
       border-radius: 0 !important;
+      clip-path: none !important;
       background: #000 !important;
       box-shadow: none !important;
       z-index: 2147483647 !important;
+    }
+
+    .game-aperture:fullscreen::after,
+    .game-aperture:-webkit-full-screen::after {
+      display: none !important;
     }
 
     .game-aperture:fullscreen #game,
@@ -545,28 +565,41 @@
 
 
 
-    /* The V11 illustration already contains the prompt, so do not draw a duplicate HTML pill. */
+    /* V17: an opaque HTML pill masks the text baked into portal.webp.
+       Edit the wording in the #dragonHint HTML below; no image editing is needed. */
     .dragon-hint {
-      display: none !important;
       position: absolute;
       z-index: 11;
-      top: 8.1%;
-      right: 2.2%;
-      width: min(21%, 300px);
-      padding: clamp(4px, .52vw, 8px) clamp(7px, .8vw, 12px);
+      left: 71.05%;
+      top: 8.95%;
+      width: 19.8%;
+      height: 5.8%;
+      min-height: 24px;
+      padding: 0 clamp(6px, .72vw, 12px);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: .45em;
-      border: 1px solid rgba(255, 218, 143, .66);
+      gap: .5em;
+      overflow: hidden;
+      border: 1px solid rgba(255, 218, 143, .9);
       border-radius: 999px;
       color: #fff0bc;
-      background: linear-gradient(135deg, rgba(36, 14, 62, .94), rgba(77, 30, 102, .85));
-      box-shadow: 0 0 14px rgba(255, 190, 111, .22), 0 0 20px rgba(185, 108, 255, .18);
-      font: 800 clamp(6px, .61vw, 9px)/1.25 Arial, sans-serif;
+      /* Opaque fill is intentional: it completely hides the old words in the artwork. */
+      background: linear-gradient(135deg, #1b0b37 0%, #29104b 54%, #18092f 100%);
+      box-shadow: 0 0 12px rgba(255, 190, 111, .16), 0 0 18px rgba(185, 108, 255, .2), inset 0 1px 0 rgba(255,255,255,.09);
+      font: 800 clamp(6px, .61vw, 9px)/1.2 Arial, sans-serif;
       letter-spacing: .055em;
       text-align: center;
+      text-transform: uppercase;
+      white-space: nowrap;
       pointer-events: none;
+    }
+
+    .dragon-hint .hint-label {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .dragon-hint .hint-arrow {
@@ -690,10 +723,10 @@
 
     @media (max-width: 700px) {
       .dragon-hint {
-        top: 8.1%;
-        right: 1.3%;
-        width: 24%;
+        min-height: 18px;
         font-size: 6px;
+        padding-inline: 4px;
+        letter-spacing: .025em;
       }
       .setup-card { width: 94%; padding: 15px; }
       .file-pick-row { grid-template-columns: 1fr; gap: 8px; }
@@ -857,7 +890,7 @@
 
   <main class="stage-wrap">
     <section class="scene" id="scene" aria-label="Spyro Browser: Portal do Smoczych Krain">
-      <img class="scene-art" src="assets/portal.webp?v=15" alt="Panoramiczna kraina smoków z magicznym portalem i fioletowym smokiem na pierwszym planie po lewej" draggable="false">
+      <img class="scene-art" src="assets/portal.webp?v=17" alt="Panoramiczna kraina smoków z magicznym portalem i fioletowym smokiem na pierwszym planie po lewej" draggable="false">
 
       <div class="portal-aura" aria-hidden="true"></div>
       <div class="portal-ring-motion" aria-hidden="true"></div>
@@ -886,8 +919,9 @@
       <button class="hotspot controls-hotspot" data-modal="controlsModal" aria-label="Show game controls" title="Controls"></button>
       <button class="hotspot info-hotspot" data-modal="infoModal" aria-label="Project information" title="Info"></button>
       <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="A little love for the golden dragon" title="Hover over me for a little magic"></button>
-      <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>click on dragon to download game</span><span class="hint-arrow">↗</span></div>
-      <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Choose file." title="Start Game"></button>
+      <!-- EDIT THE TEXT BELOW whenever you want to change the prompt on the artwork. -->
+      <div class="dragon-hint" id="dragonHint"><span class="hint-label">click on dragon to download game</span><span class="hint-arrow" aria-hidden="true">↗</span></div>
+      <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Wybierz plik gry." title="Start Game"></button>
       <button class="hotspot save-hotspot" data-modal="saveModal" aria-label="Informacje o zapisie gry" title="Save Game"></button>
       <button class="hotspot fullscreen-hotspot" id="fullscreenButton" aria-label="Włącz lub wyłącz pełny ekran" title="Fullscreen"></button>
 
@@ -972,7 +1006,7 @@
     </section>
   </main>
 
-  <audio id="backgroundMusic" src="./assets/dragon-realms-ambience.mp3?v=15" preload="none" loop playsinline></audio>
+  <audio id="backgroundMusic" src="./assets/dragon-realms-ambience.mp3?v=16" preload="none" loop playsinline></audio>
 
   <input id="romFile" type="file" hidden accept=".chd,.cue,.bin,.iso,.img,.pbp,.mdf,.toc,.cbn,.m3u,.ccd,.zip,.7z">
   <input id="biosFile" type="file" hidden accept=".bin,.rom,.bios">
