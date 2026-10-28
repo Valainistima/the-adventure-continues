@@ -749,8 +749,8 @@
         <div id="game"></div>
         <div class="loading-overlay" id="loadingOverlay">
           <div class="loading-orb" aria-hidden="true"></div>
-          <p id="loadingText">Otwieranie portalu...</p>
-          <small>Przygotowywanie krainy smoków</small>
+          <p id="loadingText">Opening gate...</p>
+          <small>The adventure continues</small>
         </div>
       </div>
 
@@ -1000,13 +1000,13 @@
       startButton.addEventListener("click", openGameSetup);
 
 // Direct download URL for https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin
-      const ROM_DOWNLOAD_URL = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
+      const ROM_DOWNLOAD_URL =
+    "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
 
 dragonButton.addEventListener("click", () => {
     window.location.href = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
-     }
-      });
-
+});
+      
       document.getElementById("pickRomButton").addEventListener("click", () => romInput.click());
       document.getElementById("pickBiosButton").addEventListener("click", () => biosInput.click());
 
