@@ -829,7 +829,7 @@
       <button class="hotspot controls-hotspot" data-modal="controlsModal" aria-label="Show game controls" title="Controls"></button>
       <button class="hotspot info-hotspot" data-modal="infoModal" aria-label="Project information" title="Info"></button>
       <button class="hotspot dragon-hotspot" id="dragonHeartButton" type="button" aria-label="A little love for the golden dragon" title="Hover over me for a little magic"></button>
-      <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>CLICK THE DRAGON TO CHOOSE YOUR GAME</span><span class="hint-arrow">↗</span></div>
+      <div class="dragon-hint" id="dragonHint" aria-hidden="true"><span>click to download your game</span><span class="hint-arrow">↗</span></div>
       <button class="hotspot start-hotspot" id="startButton" aria-label="Enter the Dragon Realms. Wybierz plik gry." title="Start Game"></button>
       <button class="hotspot save-hotspot" data-modal="saveModal" aria-label="Informacje o zapisie gry" title="Save Game"></button>
       <button class="hotspot fullscreen-hotspot" id="fullscreenButton" aria-label="Włącz lub wyłącz pełny ekran" title="Fullscreen"></button>
@@ -1196,14 +1196,32 @@
         const closeButton = setupModal.querySelector("[data-close-modal]");
         if (closeButton) closeButton.focus();
       }
-});
 
-    const DOWNLOAD_URL = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
+      startButton.addEventListener("click", openGameSetup);
 
-dragonButton.addEventListener("click", () => {
-    window.location.href = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
-  
-    
+      // FUTURE SETUP:
+      // Paste a direct URL here only for a game file you have the legal right to distribute.
+      // Leave it empty for now: clicking the golden dragon will open the local-file chooser.
+      const LEGAL_GAME_DOWNLOAD_URL = "";
+
+      dragonButton.addEventListener("click", () => {
+        if (LEGAL_GAME_DOWNLOAD_URL.trim()) {
+          window.location.href = LEGAL_GAME_DOWNLOAD_URL;
+        } else {
+          openGameSetup();
+        }
+      });
+
+      document.getElementById("pickRomButton").addEventListener("click", () => romInput.click());
+      document.getElementById("pickBiosButton").addEventListener("click", () => biosInput.click());
+
+      document.getElementById("resetFilesButton").addEventListener("click", async () => {
+        // Reset only the pending selection. An already-running emulator is not modified.
+        if (emulatorStarted || emulatorStarting) {
+          setupStatus.textContent = "Return to the home screen before resetting files.";
+          return;
+        }
+
         selectedRomFile = null;
         selectedBiosFile = null;
         lastFilesWereRestored = false;
