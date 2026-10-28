@@ -1197,25 +1197,15 @@
         if (closeButton) closeButton.focus();
       }
 });
-
-      startButton.addEventListener("click", openGameSetup);
-            // Direct download URL for https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin
+    
+          // Direct download URL for https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin
       const ROM_DOWNLOAD_URL =
     "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
 
 dragonButton.addEventListener("click", () => {
     window.location.href = "https://github.com/Valainistima/the-adventure-continues/releases/download/v.1.0.0/Spyro.the.Dragon.USA.bin";
-
-      document.getElementById("pickRomButton").addEventListener("click", () => romInput.click());
-      document.getElementById("pickBiosButton").addEventListener("click", () => biosInput.click());
-
-      document.getElementById("resetFilesButton").addEventListener("click", async () => {
-        // Reset only the pending selection. An already-running emulator is not modified.
-        if (emulatorStarted || emulatorStarting) {
-          setupStatus.textContent = "Return to the home screen before resetting files.";
-          return;
-        }
-
+});
+    
         selectedRomFile = null;
         selectedBiosFile = null;
         lastFilesWereRestored = false;
